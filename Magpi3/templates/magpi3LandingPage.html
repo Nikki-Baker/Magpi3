@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Magpi3 Landing Page</title>
+</head>
+
+<style>
+body {
+  font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+}
+
+.header {
+    padding: 30px;
+
+    text-align: center;
+    background: #1abc9c;
+    color: white;
+}
+
+.header h1 {
+    font-size: 40px;
+}
+
+.textBody{
+        padding-left: 30px;
+    }
+
+
+</style>
+
+
+<body>
+  <div class="header">
+      <h1>Landing Page</h1>
+      <p>Welcome to Magpi3</p>
+  </div>
+<br>
+<div class="textBody">
+
+  <div class="login">
+    <h1>Sign In</h1>
+  </div>
+
+<div>
+  <form action="{{ url_for('handle_data') }}" method="post" enctype="multipart/form-data"> <!-- name is set to project filepath cause when i tried something else it diddnt work -->
+    <input type="text" name="projectFilepath1" placeholder="email">
+    <input type="password" name="projectFilepath2" placeholder="password">
+    <input type="submit">
+  </form>
+</div>
+
+<br>
+  <div class="login">
+    <h1>Sign Up</h1>
+  </div>
+
+
+
+<div>
+  <form action="{{ url_for('handle_signup') }}" method="post" enctype="multipart/form-data">
+      <input type="text" name="fName" placeholder="first name">
+      <input type="text" name="sName" placeholder="surname">
+      <input type="text" name="LHanded" placeholder="Are you left handed (y/n)?">
+      <br><br>
+      <input type="text" name="email" placeholder="email">
+      <input type="password" name="password1" placeholder="password">
+      <input type="password" name="password2" placeholder="repeat password">
+      <input type="submit">
+  </form>
+</div>
+
+</div>
+
+</body>
+</html>
+
+
+

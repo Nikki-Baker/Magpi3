@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Magpi3 Homepage</title>
+</head>
+
+<style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+        margin: 0;
+    }
+
+    .header {
+        padding: 1px;
+
+        text-align: center;
+        background: #1abc9c;
+        color: white;
+    }
+
+    .header h1 {
+        font-size: 40px;
+    }
+
+    .header p {
+        text-align: left;
+    }
+
+    .box {
+        display: flex;
+        justify-content: space-between;
+        padding-right: 30px;
+        padding-left: 30px;
+    }
+
+    .textBody{
+        font-family: Arial, Helvetica, sans-serif;
+        padding-left: 30px;
+        }
+
+</style>
+
+
+<body>
+
+<div class="header">
+      <h1>Home Page</h1>
+
+    <div class="box">
+      <p>Hello {{data.fName}} {{data.sName}}</p>
+
+        <div class="button">
+            <button type="button">
+                <a href="{{ url_for('logout') }}">Log out</a>
+            </button>
+        </div>
+    </div>
+
+</div>
+
+
+
+<br>
+<br>
+<div class="textBody">
+    <div class="button">
+        <button type="button">
+        <a href="{{ url_for('stats') }}">Stats</a>
+        </button>
+    </div>
+
+    <br>
+    <div class="button">
+        <button type="button">
+        <a href="{{ url_for('settings') }}">Settings</a>
+        </button>
+    </div>
+
+    <br>
+    <div class="button">
+        <button type="button">
+        <a href="{{ url_for('submit') }}">Submit a target</a>
+        </button>
+    </div>
+
+
+    <br>
+    <br>
+
+    Hello {{data.fName}} {{data.sName}}, Welcome to the magpi3 homepage!
+    <br>
+    To see your targets, click on stats, to submit a target click on submit.
+</div>

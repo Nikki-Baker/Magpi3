@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Magpi3 Confirm Submission</title>
+</head>
+
+<style>
+
+    img{
+    max-width:450px;
+    max-height:450px;
+}
+
+     body {
+        font-family: Arial, Helvetica, sans-serif;
+        margin: 0;
+    }
+
+    .textBody{
+        padding-left: 30px;
+    }
+
+    .box {
+        display: flex;
+        justify-content: left;
+        align-items: center;
+        gap:  30px;
+
+        padding-right: 30px;
+        padding-left: 30px;
+        padding-top: 15px;
+        padding-bottom: 15px;
+
+        background: #1abc9c;
+        color: white;
+    }
+
+    .header{
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 40px;
+    }
+
+</style>
+
+
+<div class="box">
+
+    <div class="header">Confirm Submission</div>
+
+    <div class="button">
+        <button type="button">
+        <a href="{{ url_for('submit') }}">Back</a>
+        </button>
+    </div>
+</div>
+
+
+
+
+<body>
+<br><br>
+<div class="textBody">
+Confirm  your submission, is this the image you want to submit?<br>
+If your image has not been processed properly, try retaking the picture and resubmitting.
+
+<br>
+
+<br><br>
+
+<img src="../static/{{processedTimestamp}}.jpg" alt="Processed Image">
+
+<br><br>
+
+<form action="{{ url_for('handle_processing') }}" method="post" enctype="multipart/form-data"> <!-- name is set to project filepath cause when i tried something else it diddnt work -->
+    <input type="text" name="score" placeholder="input score" class="score">
+    <input type="text" name="userNotes" placeholder="Notes" class="userNotes">
+    <input type="hidden" name="vects" value={{ polVects|safe }}>
+    <input type="submit">
+  </form>
+
+</div>
+
+
+
+</body>
+</html>
+
+
+

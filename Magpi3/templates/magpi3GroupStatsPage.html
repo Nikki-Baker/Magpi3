@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Magpi3 Stats</title>
+</head>
+
+<style>
+
+    .tableObject{
+        padding-top:15px ;
+        padding-left:30px ;
+    }
+
+    table, th, td {
+        border: 1px solid;
+        border-collapse: collapse;
+
+    }
+
+    th {
+        background-color: #1abc9c;
+        color: white;
+        border: black;
+        padding: 5px;
+
+    }
+
+    tr:nth-child(even){background-color: #f2f2f2;}
+    tr:hover {background-color: #ddd;}
+
+
+    .fixed-column {
+        width:  175px;
+    }
+
+
+    .deleteBtn{
+        text-align: center;
+        border: 1px solid black;
+        cursor: pointer;
+
+    }
+    .deleteBtn:hover {background-color: orange;}
+
+
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+        margin: 0;
+    }
+
+    .textBody{
+        padding-left: 30px;
+    }
+
+
+    .box {
+        display: flex;
+        justify-content: left;
+        align-items: center;
+        gap:  30px;
+
+        padding-right: 30px;
+        padding-left: 30px;
+        padding-top: 15px;
+        padding-bottom: 15px;
+
+        background: #1abc9c;
+        color: white;
+    }
+
+    .header{
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 40px;
+    }
+
+
+</style>
+
+<body>
+
+<div class="box">
+
+    <div class="header">Group Stats Page - {{data.fName}} {{data.sName}}</div>
+
+    <div class="button">
+        <button type="button">
+        <a href="{{ url_for('homepage') }}">Homepage</a>
+        </button>
+    </div>
+
+    {% if data.asAdmin == False %}
+    <div class="button">
+        <button type="button">
+        <a href="{{ url_for('stats') }}">Stats</a>
+        </button>
+    </div>
+    {% else %}
+    <form action="{{ url_for('statsADMIN') }}" method="post" enctype="multipart/form-data" class="button">
+        <input type="hidden" name="ID" value={{data.ID}}>
+        <button type="submit">Stats</button>
+    </form>
+    {% endif %}
+
+</div>
+
+
+</body>
+</html>
+
+<div class="textBody">
+    <br>
+    showing targets from group: {{data.selectedGroupName}}
+    <br>
+    <br>
+    <form action="/group_stats" method="POST">
+        <select name="group_selection" id="group_selection">
+            <option value="" disabled selected>Select a group to view</option>
+                {% for item in data.groups %}
+                    <option value="{{ item }}">{{ item[1] }}</option>
+                {% endfor %}
+        </select>
+        <input type="hidden" name="asAdmin" value={{data.asAdmin}}>
+        <input type="hidden" name="ID" value={{data.ID}}>
+        <button type="submit">View</button>
+    </form>
+</div>
+
+<div class="tableObject">
+    <table>
+        <tr>
+            <th>Target ID</th>
+            <th>Date Submitted</th>
+            <th>Score</th>
+            <th>Target</th>
+            <th>User Notes</th>
+            <th>Analysis</th>
+            <th>Group</th>
+            {% if data.asAdmin == False %}
+            <th>Delete Target</th>
+            {% endif %}
+        </tr>
+
+      {% for score in data.scores %}
+      {% set outer_loop = loop %}
+          {% if data.selectedGroupID == data.targetPureGroupID[loop.index-1] %}
+            <!-- Content to display if the condition is True -->
+
+            <tr>
+                <td>{{data.targetIDs[loop.index-1]}}</td>
+                <td>{{data.dates[loop.index-1]}}</td>
+                <td>{{score}}</td>
+
+                <td><canvas id="diagram" width="220" height="220"></canvas></td> <!-- canvas that displays shots -->
+
+                <td class="fixed-column">{{data.userNotes[loop.index-1]}}</td>
+                <td class="fixed-column">{{data.comments[loop.index-1]}}</td>
+
+                <td>Group: {{data.targetsInGroup[loop.index-1][1]}} <br> <!-- dropdown menu for groups -->
+                    {% if data.asAdmin == False %}
+                    <form action="/handle_group_change" method="POST">
+                        <select name="item_selection" id="item_selection">
+                            <option value="" disabled selected>To change group select a group and press submit</option>
+                            {% for item in data.groups %}
+                                <option value="{{ item }}:{{data.targetIDs[outer_loop.index-1]}}">{{ item }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit">Change Group</button>
+                    </form></td>
+                    {% endif %}
+
+                {% if data.asAdmin == False %}
+                <td><div class="deleteBtn" data-targetID={{data.targetIDs[loop.index-1]}}>Delete Target</div></td> <!-- Delete button -->
+                {% endif %}
+            </tr>
+          {% endif %}
+      {% endfor %}
+    </table>
+</div>
+
+
+
+
+<!-- JS for drawing canvases -->
+<script>
+
+    const canvas = document.getElementById("diagram");
+    let canvases = Array.from(document.querySelectorAll("canvas"))
+
+    console.log(`Script ${canvases}`)
+
+    let contexts = []
+
+    for (let c of canvases){
+        contexts.push(c.getContext("2d"))
+    }
+
+    function draw(ctx, t) {
+        //let t = 1
+        let border = 10
+        let contentWidth = 200
+        let contentHeight = 200
+        let centerX = (contentWidth/2) + border
+        let centerY = (contentHeight/2) + border
+
+
+        // green square
+        ctx.fillStyle = "green";
+        ctx.fillRect(5, 5, contentWidth+10, contentHeight+10);
+
+        // white middle
+        ctx.fillStyle = "white"
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, 100, 0, Math.PI * 2, false); // Outer circle
+        ctx.fill()
+
+        // black outline
+        ctx.fillStyle = "black"
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, 100, 0, Math.PI * 2, false); // Outer circle
+        ctx.stroke()
+
+
+
+
+        for (let i = 0; i < 11; i++) {
+
+            let x = centerX + {{data.vectorsCart}}[t][i][0]
+            let y = centerY + {{data.vectorsCart}}[t][i][1]
+
+            console.log(`i=${i}`)
+            console.log(`x=${x}`)
+            console.log({{data.vectorsCart}}[t][i][0])
+            console.log(`y=${y}`)
+            console.log({{data.vectorsCart}}[t][i][1])
+
+
+
+            if(0 === i){ // only draw these the first loop (bottom layer)
+            // middle
+            ctx.fillStyle = "black";
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 5, 0, Math.PI * 2, false);
+            ctx.fill();
+
+
+            //vars for avg
+            let xA = centerX + {{data.avgVectors}}[t][0]
+            let yA = centerY + {{data.avgVectors}}[t][1]
+
+            ctx.fillStyle = "red";
+            ctx.beginPath();
+            ctx.arc(xA, yA, 4, 0, Math.PI * 2, false);
+            ctx.fill();
+
+
+            // draw standard deviation
+            let radiusX = ({{data.stdDevs}}[t][0])
+            let radiusY = ({{data.stdDevs}}[t][1])
+
+            ctx.fillStyle = "grey";
+            ctx.beginPath();
+            ctx.ellipse(xA, yA, radiusX, radiusY, 0, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // draw outlier bounding
+            // TODO: adjust to work well with real data
+            ctx.fillStyle = "grey";
+            ctx.beginPath();
+            ctx.ellipse(xA, yA, radiusX * 1.5, radiusY * 1.5, 0, 0, Math.PI * 2);
+            ctx.stroke();
+
+            }
+
+
+
+            // shot
+            ctx.fillStyle = "blue";
+            ctx.beginPath();
+            ctx.arc(x, y, 3.5, 0, Math.PI * 2, false);
+            ctx.fill()
+
+
+
+
+
+        }
+
+
+
+    }
+
+   // document.getElementById("my-div").draw()
+
+    for (let i = 0; i<canvases.length; i++){
+        try{
+            draw(contexts[i],i)
+        }catch(e){
+        console.log(e)
+        }
+    }
+
+
+// JS to delete target
+
+
+// Select all delete buttons
+const deleteButtons = document.querySelectorAll('.deleteBtn');
+
+// Add click event listener to each delete button
+deleteButtons.forEach((button) => {
+  button.addEventListener('click', async () => {
+    // Confirm with the user if they want to proceed
+    const userConfirmed = window.confirm('Are you sure you want to delete this target?');
+
+    if (userConfirmed) {
+      // Get the target ID from the clicked button's data attribute
+      const targetId = button.dataset.targetid;
+
+      // Send the target ID to the server using fetch
+      try {
+        const response = await fetch('/handle_delete', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ targetId })
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        // Handle the response from the server
+        const data = await response.json();
+        console.log('Success:', data);
+
+        // Reload the page
+        window.location.reload();
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    } else {
+      // User clicked Cancel, so no action is taken
+      console.log('User decided not to delete the target.');
+    }
+  });
+});
+
+
+</script>
+
+
+
+
+
+<!--https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API    USE THIS-->
